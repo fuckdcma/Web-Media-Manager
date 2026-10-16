@@ -1,0 +1,154 @@
+---
+config:
+  layout: elk
+---
+flowchart TB
+ subgraph s1["MODULE GATEWAY STREAM"]
+        n58["KHỞI TẠO GITPOD"]
+        n59@{ label: "TẢI VÀ CÀI ĐẶT TORRSERVER<br>(<a href=\"https://github.com/YouROK/TorrServer\" style=\"display:\">YouROK/TorrServer: Torrent stream server</a>)" }
+        n60["NHẬN URL TORRENT"]
+        n49["TORRENT STREAM SANG HTML SOURCE"]
+  end
+ subgraph s2["MODULE GET TORRENT URL"]
+        n7["GỌI API YTS<br>(API LINK:https://movies-api.accel.li/api/v2/)<br>"]
+        n19["1080"]
+        n20["720"]
+        n21["4K"]
+        n32(["CÓ"])
+        n35(["KHÔNG"])
+        n61["ID IMDB"]
+        n13["LẤY URL TORRENT"]
+        n101["Lấy ID YTS"]
+        n102["Kiểm tra đã có"]
+        n103["Kiểm tra chưa có"]
+        n104["Thêm ID vào DB"]
+  end
+ subgraph s3["CALL API THEDBMOVIE"]
+        n9["GỌI API TMDB"]
+        n18["THỂ LOẠI"]
+        n39["TÊN PHIM"]
+        n16["NĂM"]
+        n14["URL POSTER"]
+        n17["QUỐC GIA"]
+        n38["ID IMDB"]
+        n15["URL NỀN"]
+  end
+ subgraph s4["KIỂM TRA ID TỒN TẠI NHỮNG DẠNG NÀO"]
+        n11["ID CÓ TỒN TẠI"]
+        n23["ĐỘ PHÂN GIẢI 1080"]
+        n24["ĐỘ PHÂN GIẢI 720"]
+        n25["ĐỘ PHÂN GIẢI 4K"]
+        n30(["CÓ"])
+        n31(["KHÔNG"])
+  end
+ subgraph s5["MODULE TÁCH MEDIA - DOWLOAD UPLOAD"]
+        n43["BĂM FILE"]
+        n44["DẠNG HLS"]
+        n45["DẠNG BINARY"]
+        n46["MẢNH CẮT &lt;20MB"]
+        n47["METADATA GỐC"]
+        n42["KHỞI TẠO GITHUB ACTION"]
+        n51["TẢI FILE TỪ NGUỒN NHẬN"]
+        n57["TẢI FILE SUBTITLE"]
+        n52["GIẤU TRONG FILE ẢNH"]
+        n53["GHI LẠI METADATA MỚI"]
+        n55["UPLOAD MẢNH ĐÃ GIẤU LÊN HUGGINGFACE DISSCUS"]
+        n54["HUGGING FACE DATASET"]
+        n56["LẤY LINK DOWLOAD METADATA/SUBTITLE"]
+  end
+ subgraph s6["DIALOG TẠO THỦ CÔNG"]
+        n87["ĐIỀN THÔNG TIN THỦ CÔNG"]
+        n88["NĂM"]
+        n89["TÊN PHIM"]
+        n90["URL TẢI PHIM"]
+        n91["URL TẢI SUBTITLE"]
+        n92["URL"]
+        n113["URL TORRENT"]
+        n115["MAGGNET"]
+        n116["URL HTML"]
+  end
+ subgraph s7["MODULE GET URL SUBTITLE VN"]
+        n8["GỌI API OPENSUBTITLE"]
+        n40["LẤY URL DOWLOAD"]
+        n107["Kiểm tra url có RATE cao nhất, nếu 2 rate bằng nhau thì kiểm tra lượt dowload cao nhất"]
+  end
+    n1(("WEB MANAGER")) --> n2["BACKEND"] & n3["FRONTEND"]
+    n2 --> n4["KIỂM TRA ID IMDB"]
+    n4 --> n10["ORACLE AUT0NOMUS DATABASE"]
+    n10 --> n11 & n12["ID KHÔNG TỒN TẠI"] & n93["TỔNG LƯỢNG FILM ĐÃ THÊM TRONG 1 THÁNG/ 1 TUẦN/ 1 NGÀY/ 1 NĂM/ 1 GIỜ<br>Bento Grid"]
+    n12 --> n7 & n8 & n9 & n58
+    n7 --> n61
+    n9 --> n14 & n15 & n16 & n17 & n18 & n38 & n39
+    n13 --> n19 & n20 & n21
+    n11 --> n23 & n24 & n25
+    n25 --> n30 & n31
+    n31 --> n7 & n58
+    n19 --> n32 & n35
+    n15 --> n10
+    n18 --> n10
+    n17 --> n10
+    n14 --> n10
+    n16 --> n10
+    n38 --> n10
+    n39 --> n10
+    n8 --> n107
+    n43 --> n44 & n45
+    n44 --> n46 & n47
+    n20 --> n32 & n35
+    n21 --> n32 & n35
+    n23 --> n30 & n31
+    n24 --> n30 & n31
+    n49 --> n42
+    n32 --> n49
+    n42 --> n51 & n57
+    n51 --> n43
+    n45 --> n46 & n47
+    n46 --> n52
+    n52 --> n53 & n55
+    n47 --> n53
+    n53 --> n54
+    n54 --> n56
+    n40 --> n42
+    n57 --> n54
+    n58 --> n59
+    n59 --> n60
+    n60 --> n49
+    n61 --> n13 & n101
+    n56 --> n10
+    n3 --> n65["DASHBOARD TAB"] & n66["DỰ ÁN TAB"] & n67["PHIÊN BẢN BUILD TAB"] & n68["API TAB"]
+    n68 --> n69["YTS (Cho phép sửa Url)"] & n70["OPENSUBTITLE"] & n71["GITHUB"] & n72["TMDB"]
+    n66 --> n73["TẤT CẢ"] & n74["ĐANG LÊN LỊCH"] & n75["ĐÃ HOÀN THÀNH"] & n77["TẠO MỚI"] & n79["CHỈNH SỬA"]
+    n65 --> n78["BIỂU ĐỒ"] & n95["CÁC DỰ ÁN ĐANG CHẠY"]
+    n77 --> n80["THỦ CÔNG"] & n81["TỰ ĐỘNG LÊN LỊCH"]
+    n81 --> n82["API YTS"] & n83["LIST THỦ CÔNG"]
+    n80 --> n84["URL"] & n85["URL TORRENT"] & n86["ID IMDB"]
+    n85 --> s6
+    n87 --> n88 & n89 & n90 & n91 & n92
+    n84 --> s6
+    n78 --> n93 & n94["MỨC ĐỘ SỬ DỤNG CPU/RAM<br>Progress Ring vs. Spinner vs. Progress Bar &lt;progress&gt;ProgressView"] & n97["DỰ ÁN ĐANG CHẠY/ DỰ ÁN ĐANG XẾP LƯỢT"]
+    n95 --> n96["SỐ PHIÊN ACTION ĐẠNG CHẠY TRONG DỰ ÁN"] & n98@{ label: "CÁC BƯỚC ĐANG ĐẠT ĐƯỢC trong dự án<br><span style=\"color:\">&lt;Timeline&gt;</span>" }
+    n82 --> n99["Tự động lên lịch 10 ID YTS trong kho dữ liệu"]
+    n83 --> n100["LIST ID IMDB"]
+    n99 --> n10
+    n101 --> n102 & n103
+    n103 --> n104
+    n104 --> n10
+    n69 --> n106["Kiểm tra url có tồn tại không"]
+    n107 --> n40
+    n79 --> n108["Search theo ID imdb/ Tên phim"]
+    n109["Chỉnh sửa link"] --> n110["LINK VIDEO"] & n111["LINK SUBTITLE"]
+    n108 --> n109 & n112["THÔNG TIN KHÁC CỦA PHIM"]
+    n90 --> n113 & n115 & n116
+    n105["Tự động lên lịch 10 ID YTS trong kho dữ liệu"]
+
+    n59@{ shape: rect}
+    n19@{ shape: diam}
+    n20@{ shape: diam}
+    n21@{ shape: diam}
+    n23@{ shape: diam}
+    n24@{ shape: diam}
+    n25@{ shape: diam}
+    n4@{ shape: decision}
+    n10@{ shape: cyl}
+    n98@{ shape: rect}
+    n105@{ shape: rect}
